@@ -20,4 +20,16 @@ PowerShell 7中先运行`python scripts/preflight.py`。核心Python标准库；
 
 工具：project.py状态/确认/归档；office.py材料提取/结构检查/讲稿；Build-Deck.ps1原生制作；Render-Office.ps1只读预览。各工具--help或Get-Help查看入口。
 
-版本管理用私有仓库、独立分支、验证、用户确认后合并/标版本。PPT稿次与skill版本分开。不会打包整份研究PPT、研究结论或学校身份。
+## 从 GitHub 安装与分享
+
+仓库地址：<https://github.com/wh228935/research-wh-ppt-skill>。
+
+用户已决定将仓库改为公开；实际可见性需以 GitHub 设置为准。当前代码在 `draft/initial-skill` 开发分支，主分支尚未发布完整稳定包，暂不把仓库主页作为已可安装的稳定版宣传。
+
+稳定版发布后，其他人可以把以下文字发给 Codex：
+
+> 使用 skill-installer，把 https://github.com/wh228935/research-wh-ppt-skill 的 main 分支仓库根目录作为 skill，安装到我的个人 skills 目录。安装名设为 research-wh-ppt-skil。先检查已有同名目录，不覆盖已有版本；安装后检查 SKILL.md 和必要依赖。
+
+完整安装方式、开发版检查和依赖边界见 [安装说明](INSTALL.md)。安装的是科研PPT工作流和工具；不会自动替用户安装 Office、Python 或其他缺失工具。
+
+版本管理采用独立分支、验证、用户确认后合并/标版本。PPT稿次与skill版本分开。不会打包整份研究PPT、研究结论或学校身份。
