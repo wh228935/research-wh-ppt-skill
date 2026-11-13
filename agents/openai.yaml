@@ -1,0 +1,6 @@
+interface:
+  display_name: "科研PPT Skill"
+  short_description: "论文精读、原图选择、逐页规划与确认后制作可编辑科研PPT和讲稿"
+  default_prompt: "请使用$research-wh-ppt-skil制作科研PPT，先确认时长和背景，再精读材料并逐步交我确认。"
+policy:
+  allow_implicit_invocation: true
