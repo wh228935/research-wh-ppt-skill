@@ -4,7 +4,17 @@
 
 结构：`python scripts/office.py audit final.pptx --json audit.json`检查ZIP/XML、关系、备注、可编辑对象、外链、静态效果、页外几何。结果不能证明科学结论、图内小字、字距或审美。
 
-实际软件：`Render-Office.ps1 -Source ... -OutputDir ... -Application PowerPoint`与`-Application WPS`分别只读打开导出逐页PNG，记录来源PPT哈希、软件版本、预览哈希。分别逐页看标题/正文/图注、清晰度、遮挡溢出、间距主次和导航。未实际验证的软件明确列出；一个报告不能冒充另一个。
+实际软件仅PowerPoint。`Render-Office.ps1 -Source ... -OutputDir <新目录> -Python <Python路径>`只读打开并记录来源PPT哈希、软件版本、预览哈希；不自动启动WPS，交付说明WPS未验证。最终报告覆盖全稿；调试可加`-Pages 2,15,22`仅处理问题页。省略Pages代表全稿，但未变页面可以复用缓存。每次输出摘要，不把所有报告内容反复送进上下文。
+
+## 增量检查与停止条件
+
+- 先用结构、文本、图片比例、对象边界检查解决确定性问题，再首次渲染。对照空模板检查目录左侧蓝块、圆角章节条、正文小结和总结行结构，不能只看溢出。
+- 使用随包版式时先运行`python scripts/audit_layouts.py final.pptx --outline outline.json`，检查目录蓝块比例与颜色、章节条、总结成对分行等锚点；结构通过仍需实际看效果。样页可用`--roles cover contents body-figure summary closing`。
+- 预览缓存默认保存在输出目录的父目录`.powerpoint-preview-cache`，可用`-CacheDir`指定；按页面XML、图件、母版、主题、画布、页序、PowerPoint版本、导出尺寸和字体环境绑定。图片/主题/字体变化使相关缓存失效；单纯备注变化不会重新出图。缓存PNG损坏时重新导出。
+- 初次逐页目视，之后只看变化页或尚未看过的页；未变化且已目视的页复用记录。整体布局可先看缩略图，细节看对应原尺寸页，不重复把同一张大图送入模型。
+- 实际目视后才运行`python scripts/render_cache.py review --report .../render-report.json --pages 1 2 3 --note "实际检查项和发现"`。此命令只记录代理陈述，不能自动证明已经看图；不要先把未看页面标成通过。
+- 同一问题只有一轮自动修正机会。记录`问题ID、页码、缺陷、已修正次数、修正后结果`；仍未解决时问用户，不换名继续试，不为零警告或主观精修反复输出。继续完成无关部分。
+- 只改讲稿时复用PPT预览；Word确有变化才重新导出检查，并复用完全相同且已经检查的Word页面。修复批次集中完成后再检查，不每改一处就重跑全稿。
 
 Word从最终PPT实际备注生成，页序/标题/讲稿对应，不能只用旧plan导出。需在Word实际检查排版；若导PDF且本机有用户指定Export-WordPdf.ps1必须用它。其他Word COM操作也遵守命名互斥锁和任务进程所有权清理。Word正文无截图、技术检查记录或强加来源列表。未检查不写已验证。
 

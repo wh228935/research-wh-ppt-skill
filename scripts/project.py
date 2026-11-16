@@ -185,6 +185,13 @@ def check_plan(state, work, plan_path, stage):
             raise ValueError('代表页确认没有绑定当前风格参数文件')
         if set(p['id'] for p in pages) != set(outline_pages):
             raise ValueError('全稿页面与确认大纲不一致，不能自行增删')
+    if plan.get('template_file'):
+        template = locate(plan_path.parent, plan['template_file'])
+        if sha(template) != plan.get('template_sha256') or not any(
+                p['scope'] == 'layout-template' for p in plan.get('permissions', [])):
+            raise ValueError('替换任务模板需要文件指纹和layout-template具体审核')
+        if stage in {'full', 'deliver'} and bound.get(template) != sha(template):
+            raise ValueError('代表页确认未绑定当前任务模板')
     assets = {a['id']: a for a in plan.get('assets', [])}
     selected = set(figures.get('selected_assets', []))
     for permission in plan.get('permissions', []):
@@ -199,6 +206,14 @@ def check_plan(state, work, plan_path, stage):
         allowed_text.update({norm(page['title']), norm(op.get('header', ''))})
         if norm(page.get('header', '')) != norm(op.get('header', '')):
             raise ValueError('章节页眉改变，先更新大纲确认')
+        if style.get('layout_library'):
+            if page.get('layout_id') not in {'cover','contents','body-figure','summary','closing'}:
+                raise ValueError('新版风格要求明确的layout_id并选用参考版式库')
+            if op.get('layout_id') and page['layout_id'] != op['layout_id']:
+                raise ValueError('页面版式改变，先提出建议并更新大纲确认')
+        for value in page.get('template_fields', {}).values():
+            if norm(value) and norm(value) not in allowed_text:
+                raise ValueError('模板含未经大纲确认的文字')
         if not str(page.get('notes', '')).strip():
             raise ValueError(f"缺少详细备注: {page['id']}")
         for obj in page.get('objects', []):
@@ -277,7 +292,7 @@ def archive(state, work, manifest_path, output, revision):
         raise ValueError('QA未绑定最终PPT或尚未实际逐页目视检查')
     if not qa.get('content_reviewed') or qa.get('unresolved_errors'):
         raise ValueError('内容未检查或存在未解决错误')
-    for name in ['PowerPoint', 'WPS']:
+    for name in ['PowerPoint']:
         q = locate(base, bundle['software_reports'][name])
         r = read(q)
         if r.get('application') != name or not r.get('opened') or r.get('source_sha256') != source_hash or len(r.get('slides', [])) != len(slides):

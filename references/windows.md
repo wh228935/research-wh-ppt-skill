@@ -1,6 +1,6 @@
 # 运行环境
 
-核心：Python 3.10+标准库、PowerShell 7、Windows PowerPoint或WPS。无其他私人skill依赖。先运行preflight.py只探测，不安装。
+核心：Python 3.10+标准库、PowerShell 7、Windows PowerPoint。无其他私人skill依赖。先运行preflight.py只探测，不安装。只检查PowerPoint，不自动启动WPS；不能因归档要求而补做用户已取消的软件检查。
 
 PPT制作/渲染用本机Office COM；ProgID注册不等于已经实测可用。Word讲稿通过标准库OOXML生成，实际渲染仍需要可用软件。DOCX提取无需第三方库；PDF文字可用PyMuPDF或pypdf，逐页渲染需要PyMuPDF或其他已验证工具。缺依赖先给用途和安装方案，请用户决定，不自动pip或改系统。
 

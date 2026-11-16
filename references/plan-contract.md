@@ -13,7 +13,7 @@
 ## outline.json（用户确认的内容，不随小排版改变）
 
 ```json
-{"pages":[{"id":"s01","title":"当页主题","header":"1. 章节名","on_screen":["完整上屏句子","图题","表格每格文字"],"assets":["fig1"],"layout_suggestion":"图与解释的关系","speaking_points":["本页讲解重点"],"estimated_seconds":60,"decisions":[],"backup":false}]}
+{"pages":[{"id":"s01","layout_id":"body-figure","title":"当页主题","header":"1. 章节名","on_screen":["完整上屏句子","图题","表格每格文字"],"assets":["fig1"],"layout_suggestion":"图与解释的关系","speaking_points":["本页讲解重点"],"estimated_seconds":60,"decisions":[],"backup":false}]}
 ```
 
 上屏文字包括实际计划出现的表格单元格、图注和必要标签。允许排版换行、坐标和样式改变；不允许未确认的新句子。结构页也计入大纲。详细备注来自实际精读，不一定逐字在大纲列出，但不能增加未支持结论。
@@ -41,6 +41,10 @@
 
 对象：text（text/font_size/color/bold/align/highlights）、rect（fill/line/rounded）、image（asset_id，只contain，不裁）、table（rows等宽二维数组/font_size）、line（box为起点x/y与终点差值w/h；from/to连接已有对象，默认矩形右侧4接左侧2，竖向可指定from_site/to_site；arrow为true）。每个对象id唯一、box为4个数。表题单独text对象放表上，图题放图下。正文默认左对齐。高亮项`{"text":"准确词句","color":"FF0000"}`仅改变样式，不改文本。
 
+新版style带layout_library时，逐页必须给`layout_id: cover|contents|body-figure|summary|closing`。受管理工具复用`assets/layouts.mjs`或空模板；原生后备入口通过InsertFromFile复用对应模板页。后备入口的`template_fields`是“原生对象名→已确认文字”，例如`{"ConclusionText":"原文支持的小结"}`；所有字段文字同样经过大纲校验，不能借模板塞新结论。不传ConclusionText时不保留空结论条。默认目录4项、总结3行，其他行数先在任务模板或布局模块中按真实内容调整，不能留空行凑数。替换任务模板必须作为具体版式变化纳入样页审核；包内模板和本机安装副本不直接编辑。
+
+自备任务模板用`template_file`与`template_sha256`绑定，另有`layout-template`提案与真实确认；全稿阶段还须在代表页审核快照中绑定同一模板文件。默认随包空模板不需要额外重复确认。
+
 asset.origin为source（默认）、external、processed或redrawn；source/external文件须被figures.files绑定。processed/redrawn另写original_path及original_sha256对应已选原图，强制transform:ID或redraw:ID；external强制add-image:ID。required_permissions可附加其他scope。plan.permissions列`{"scope":"transform:fig1","proposal":"proposals/fig1.json"}`。处理范围和输出须忠于批准提案，脚本只能核对文件与声明，不能识别图意。实际处理另行执行并保留原图，不能把fit改cover绕过许可。字体替换需要font-change提案。
 
 `Build-Deck.ps1 -PlanPath ... -WorkDir ... -OutputPath ... -Stage prototype|full -Python ...`只创建新稿，不自动重建局改原文件。生成前检查确认记录；渲染计划文字/图件须匹配内容大纲。微小排版不改outline文件，实质内容变更先重新确认outline。
@@ -50,7 +54,7 @@ prototypes确认针对审核快照，`project.py snapshot --output prototype-rev
 ## bundle.json
 
 ```json
-{"pptx":"final.pptx","docx":"notes.docx","preview_dir":"previews-powerpoint","contact_sheet":"contact-sheet.png","qa":"qa.json","software_reports":{"PowerPoint":"previews-powerpoint/render-report.json","WPS":"previews-wps/render-report.json"},"formal_pages":15,"backup_pages":2}
+{"pptx":"final.pptx","docx":"notes.docx","preview_dir":"previews-powerpoint","contact_sheet":"contact-sheet.png","qa":"qa.json","software_reports":{"PowerPoint":"previews-powerpoint/render-report.json"},"formal_pages":15,"backup_pages":2}
 ```
 
 qa.json记真实内容检查、逐页目视检查：source_sha256、content_reviewed、visual_reviewed、unresolved_errors。报告不是自动推断，没检查不得填true。按实际页数填写，数字只是字段示意。

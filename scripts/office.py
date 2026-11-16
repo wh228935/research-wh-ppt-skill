@@ -68,7 +68,7 @@ def ppt_slides(path):
                     texts.append(value)
                 name = shape.find('p:nvSpPr/p:cNvPr', NS)
                 ph = shape.find('p:nvSpPr/p:nvPr/p:ph', NS)
-                if name is not None and name.get('name') == 'PageTitle':
+                if name is not None and name.get('name') in {'PageTitle', 'BodyTopic'}:
                     title = value
                 elif not title and ph is not None and ph.get('type') in {'title','ctrTitle'}:
                     title = value
