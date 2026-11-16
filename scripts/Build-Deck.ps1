@@ -127,10 +127,37 @@ try{
  $pres=$session.App.Presentations.Add(0)
  $pres.PageSetup.SlideWidth=[double]$script:Style.canvas_pt[0];$pres.PageSetup.SlideHeight=[double]$script:Style.canvas_pt[1]
  foreach($page in $plan.pages){
-  $slide=$pres.Slides.Add($pres.Slides.Count+1,12);$slide.Name=[string]$page.id
+  $usingTemplate=[bool]$page['layout_id']
+  if($usingTemplate){
+   $catalog=Get-Content -LiteralPath (Join-Path $PSScriptRoot '../assets/layout-catalog.json') -Raw | ConvertFrom-Json -AsHashtable
+   $entry=@($catalog.layouts | Where-Object {$_.id -eq $page.layout_id})
+   if($entry.Count -ne 1){throw 'Unknown reference layout_id'}
+   $template=Join-Path $PSScriptRoot '../assets/reference-layouts.pptx'
+   if($plan['template_file']){$template=Full-Path $plan.template_file}
+   [void]$pres.Slides.InsertFromFile($template,$pres.Slides.Count,[int]$entry[0].template_slide,[int]$entry[0].template_slide)
+   $slide=$pres.Slides.Item([int]$pres.Slides.Count)
+   foreach($shape in $slide.Shapes){
+    if($shape.HasTextFrame -eq -1 -and $shape.TextFrame.HasText -eq -1){
+     $name=[string]$shape.Name
+     if($name -eq 'PageTitle'){$shape.TextFrame.TextRange.Text=$(if($page.layout_id -eq 'body-figure' -and $page.header){[string]$page.header}else{[string]$page.title})}
+     elseif($page['template_fields'] -and $page.template_fields.ContainsKey($name)){$shape.TextFrame.TextRange.Text=[string]$page.template_fields[$name]}
+     elseif($name -notmatch '^(ContentsEnglish|ContentsNumberText\d+|SummaryNumber\d+|ConclusionLabelText|ConclusionChevron)$'){$shape.TextFrame.TextRange.Text=''}
+    }
+    Release-OfficeObject $shape
+   }
+   # Figure placeholder is a work hint, not audience content.
+   try{$hint=$slide.Shapes.Item('FigureSlot');$hint.Delete();Release-OfficeObject $hint}catch{}
+   if($page.layout_id -eq 'body-figure'){
+    $topic=New-Text $slide 'BodyTopic' $page.title @(31.5,77.25,897,40.5) 24 $script:Style.primary $true;Release-OfficeObject $topic
+   }
+   if(-not ($page['template_fields'] -and $page.template_fields.ContainsKey('ConclusionText'))){
+    foreach($name in @('ConclusionBand','ConclusionLabel','ConclusionLabelText','ConclusionChevron','ConclusionText')){try{$hint=$slide.Shapes.Item($name);$hint.Delete();Release-OfficeObject $hint}catch{}}
+   }
+  }else{$slide=$pres.Slides.Add($pres.Slides.Count+1,12)}
+  $slide.Name=[string]$page.id
   $slide.FollowMasterBackground=0;$slide.Background.Fill.Solid();$slide.Background.Fill.ForeColor.RGB=Color-Rgb $script:Style.background
   $shapes=@{}
-  if($page.header -or $page.title){
+  if(-not $usingTemplate -and ($page.header -or $page.title)){
    $band=$slide.Shapes.AddShape(1,0,0,$script:Style.canvas_pt[0],$script:Style.header_height_pt)
    $band.Fill.Solid();$band.Fill.ForeColor.RGB=Color-Rgb $script:Style.primary;$band.Line.Visible=0;Release-OfficeObject $band
    $mode=if($page.Contains('header_mode')){$page.header_mode}elseif($script:Style.Contains('header_mode')){$script:Style.header_mode}else{'section'}

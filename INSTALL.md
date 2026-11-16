@@ -33,7 +33,7 @@ python <skill-installer目录>/scripts/install-skill-from-github.py --repo wh228
 ## 必要环境
 
 - Windows、PowerShell 7、Python 3（核心脚本使用标准库）。
-- PowerPoint 用于原生 PPTX 制作与主要渲染检查；本机同时有 WPS 时补充兼容性检查。
+- PowerPoint用于原生PPTX制作与显示检查。按创建者最新选择，仅检查PowerPoint，不自动启动WPS；WPS显示效果未验证。
 - Word 用于讲稿的原生显示检查或PDF校验；PDF只是内部检查文件，不是默认成品。
 - 读取PDF时需要可用的PDF提取和渲染工具。若环境缺失，先说明缺项、用途和安装方案，取得使用者同意后再安装。
 

@@ -1,1 +1,14 @@
-{"status":"structural-reference-only","layouts":[{"id":"figure-explanation","relation":"one-primary-evidence-with-explanation","reference_page":7},{"id":"paired-figures","relation":"comparison","reference_page":17},{"id":"method-flow","relation":"ordered-process-and-explanation","reference_page":6},{"id":"results-comparison","relation":"comparable-results","reference_page":14},{"id":"text-summary","relation":"related-conclusions","reference_page":19}],"rule":"Page numbers are design provenance, not default content. No original full deck, maps, model results or school identity included. Prototype content and page selection need confirmation."}
+{
+  "status":"reference-layout-library-awaiting-user-sample-review",
+  "canvas_pt":[960,540],"canvas_css_px":[1280,720],
+  "native_template":"reference-layouts.pptx","artifact_tool_module":"layouts.mjs",
+  "layouts":[
+    {"id":"cover","template_slide":1,"reference_page":1,"fixed":"blue upper field with curved lower boundary, white title, lower white information area","identity":"replace or hide; no baked-in school logo"},
+    {"id":"contents","template_slide":2,"reference_page":2,"fixed":"left blue panel 37.34% width; white 目录/CONTENTS; right blue number blocks and rounded chapter bars with shadows","variable":"chapter count, row height and spacing; propose a new layout above 6 chapters"},
+    {"id":"body-figure","template_slide":3,"reference_page":14,"fixed":"blue numbered header; original evidence; editable pale blue conclusion band with blue label","variable":"evidence layout follows comparison relationship; band only where meaningful"},
+    {"id":"summary","template_slide":4,"reference_page":19,"fixed":"blue numbered topic blocks paired with pale blue explanation rows; optional bottom summary band","variable":"actual conclusion count and row heights; propose splitting if crowded"},
+    {"id":"closing","template_slide":5,"reference_page":20,"fixed":"blue header, nested rounded pale/white panels, central closing statement","variable":"closing structure and wording confirmed for each report"}
+  ],
+  "body_variants":["figure-explanation","paired-figures","method-flow","results-comparison","text-summary"],
+  "rule":"Reuse native reference layouts or the matching module instead of rebuilding every page as a white text list. Propose structural changes first. No research images, findings or personal identity in reusable templates."
+}

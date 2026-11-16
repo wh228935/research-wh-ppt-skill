@@ -33,7 +33,7 @@ class WorkflowTests(unittest.TestCase):
         self.json('selection.json',{'pages':['s1','s2','s3']})
         self.json('style.json',project.read(ROOT/'assets/style.json'))
         self.plan={'outline_file':'outline.json','style_file':'style.json','assets':[],
-                   'permissions':[],'pages':[{'id':p['id'],'title':p['title'],'header':p['header'],
+                   'permissions':[],'pages':[{'id':p['id'],'title':p['title'],'header':p['header'],'layout_id':'body-figure',
                     'notes':'Synthetic detailed notes; no real research statements.',
                     'objects':[{'id':'body','type':'text','text':p['on_screen'][0],
                                 'box':[24,120,900,300],'bold':False}]} for p in self.pages]}
@@ -62,6 +62,15 @@ class WorkflowTests(unittest.TestCase):
 
     def test_prototype_valid_records(self):
         self.assertEqual(self.check(),['s1','s2','s3'])
+
+    def test_template_text_cannot_bypass_outline(self):
+        self.plan['pages'][0]['template_fields']={'SummaryText1':'Unapproved synthetic claim'}
+        self.json('plan.json',self.plan)
+        with self.assertRaisesRegex(ValueError,'模板含未经'):self.check()
+
+    def test_new_style_requires_a_reference_layout(self):
+        self.plan['pages'][0].pop('layout_id');self.json('plan.json',self.plan)
+        with self.assertRaisesRegex(ValueError,'layout_id'):self.check()
 
     def test_full_blocked_before_prototype_confirmation(self):
         with self.assertRaisesRegex(ValueError,'prototypes'):
