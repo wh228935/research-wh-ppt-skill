@@ -1,5 +1,5 @@
 {
-  "status":"reference-layout-library-awaiting-user-sample-review",
+  "status":"reference-layout-library-user-confirmed",
   "canvas_pt":[960,540],"canvas_css_px":[1280,720],
   "native_template":"reference-layouts.pptx","artifact_tool_module":"layouts.mjs",
   "layouts":[
